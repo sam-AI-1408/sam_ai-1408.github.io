@@ -42,7 +42,7 @@ def create_app():
         # Show login by default if exists
         print("[DEBUG] Home accessed. Registered endpoints:", sorted(app.view_functions.keys()))
         if "login" in app.view_functions:
-            return redirect(url_for("login"))
+            return redirect(url_for("index"))
         return "Login endpoint not found. Available endpoints: " + ", ".join(sorted(app.view_functions.keys()))
 
     @app.route("/register", methods=["GET", "POST"])
@@ -59,7 +59,7 @@ def create_app():
 
             if success:
                 flash("Registered successfully. Please login.", "success")
-                return redirect(url_for("login"))
+                return redirect(url_for("index"))
             return render_template("register.html", error="Username exists or invalid input")
         return render_template("register.html")
 
@@ -95,20 +95,20 @@ def create_app():
                 session.permanent = True
                 return redirect(url_for("dashboard"))
 
-            return render_template("login.html", error="Invalid credentials (check console for debug)")
+            return render_template("index.html", error="Invalid credentials (check console for debug)")
 
-        return render_template("login.html")
+        return render_template("index.html")
 
     @app.route("/logout")
     def logout():
         session.pop("username", None)
-        return redirect(url_for("login"))
+        return redirect(url_for("index"))
 
     @app.route("/dashboard")
     def dashboard():
         username = session.get("username")
         if not username:
-            return redirect(url_for("login"))
+            return redirect(url_for("index"))
 
         # Lazy imports
         try:
@@ -121,7 +121,7 @@ def create_app():
         user = auth.get_user(username)
         if not user:
             session.pop("username", None)
-            return redirect(url_for("login"))
+            return redirect(url_for("index"))
 
         # fetch raw backend data (may be model objects or dicts)
         try:
@@ -567,3 +567,4 @@ def create_app():
 if __name__ == "__main__":
     app = create_app()
     app.run(debug=True, host="127.0.0.1", port=5000)
+
